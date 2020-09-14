@@ -12,22 +12,29 @@ Last Updated Date :: 8th Aug 2017
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import math
 import os
+import sys
 
 # Read files
 corpus_root = 'presidential_debates'
 
 dfiles = []
 filename_list = []
-for filename in os.listdir(corpus_root):
-    # Storing Filename in a list
-    filename_list.append(filename)
-    file = open(os.path.join(corpus_root, filename), "r", encoding='UTF-8')
-    doc = file.read()
-    file.close()
-    doc = doc.lower()
-    dfiles.append(doc)
+# for filename in os.listdir(corpus_root):
+#     # Storing Filename in a list
+#     filename_list.append(filename)
+#     file = open(os.path.join(corpus_root, filename), "r", encoding='UTF-8')
+#     doc = file.read()
+#     file.close()
+#     doc = doc.lower()
+#     dfiles.append(doc)
+
+dfiles.append('nasi organik rasa lebih lezat dari anorganik')
+dfiles.append('nasi goreng biasa disajikan dengan telur')
+dfiles.append('telur ayam kampung lebih sehat dari telur ayam negeri')
+dfiles.append('nasi goreng lezat dan sehat')
 
 tot_docs = len(dfiles)
 # Tokenize each debate file
@@ -36,25 +43,38 @@ df_tokens = []
 for i in range(tot_docs):
     df_tokens.append(tokenizer.tokenize(dfiles[i]))
 
+print('-------------------------- dokumen ---------------------------')
+print(dfiles)
+print('-------------------------- token ---------------------------')
+print(df_tokens)
+
+
 # Remove stop words
-stopwordslist = (sorted(stopwords.words('english')))
+stopwordslist = (sorted(stopwords.words('indonesian')))
 df_tokens_list = []
 for i in range(tot_docs):
     temp_list = []
     temp_list = [x for x in df_tokens[i] if x not in stopwordslist]
     df_tokens_list.append(temp_list)
 
+print('-------------------------- token after stopwords ---------------------------')
+print(df_tokens_list)
+
 # Remove Temporary data
 temp_list = []
 df_tokens = []
 
 # Stemming tokens
-stemmer = PorterStemmer()
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
 df_tokens_list2 = []
 for i in range(tot_docs):
     temp_list = []
     temp_list = [stemmer.stem(x) for x in df_tokens_list[i] ]
     df_tokens_list2.append(temp_list)
+
+print('-------------------------- token after stemmer ---------------------------')
+print(df_tokens_list2)
 
 # Remove Temporary data
 temp_list = []
@@ -66,6 +86,9 @@ for i in range(tot_docs):
     temp_dict = {}
     temp_dict = {x:df_tokens_list2[i].count(x) for x in df_tokens_list2[i] }
     df_tokens_list3.append(temp_dict)
+
+print('-------------------------- normalisasi vector ---------------------------')
+print(df_tokens_list3)
 
 # Remove Temporary data
 temp_dict = {}
@@ -90,6 +113,10 @@ for item_dict in df_tokens_list3:
 
     df_tokens_list4.append(temp_dict2)
 
+print('-------------------------- tf idf ---------------------------')
+print(df_tokens_list4)
+
+
 # Remove Temporary data
 temp_dict = {}
 temp_dict2 = {}
@@ -107,6 +134,20 @@ for doc_dict in df_tokens_list4:
     for k, v in doc_dict.items():
         temp_dict[k] = v / doc_len_sqrt
     df_tokens_list5.append(temp_dict)
+print('-------------------------- custom ---------------------------')
+
+for id_doc in df_tokens_list4:
+    for key in id_doc:
+        id_doc[key] *= id_doc[key]
+        # print(id_doc[key])
+    print(id_doc)
+    print(sum(id_doc.values()))
+
+
+print('-------------------------- normalisasi vektor ---------------------------')
+# print(df_tokens_list5)
+sys.exit()
+
 
 print('Processing Completed')
 
@@ -156,6 +197,9 @@ for doc  in df_tokens_list5:
         if k in qdoc_dict3:
             cos_sim += v * qdoc_dict3[k]
     cos_sim_list.append(cos_sim)
+
+print('-------------------------- cosin list ---------------------------')
+print(cos_sim_list)
 
 max_cos_sim = max(cos_sim_list)
 index = 0
