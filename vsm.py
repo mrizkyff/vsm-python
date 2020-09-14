@@ -6,6 +6,9 @@ import math
 import os
 import sys
 
+# NOTED: test baru untuk kasus setiap dokumen tidak ada term yang sama
+# NOTED: misal telur ada di DOC3 2x tetap dihitung 1x
+
 
 # KOLEKSI SELURUH TERM, tidak ada term yang sama
 def collection_term(term_list):
@@ -55,11 +58,6 @@ def stemming(token_list):
     return base_clean_term_list
 
 
-# def frekuensi_doc(token_list):
-#     dict_doc = []
-#     for term in token_list:
-#         dict_doc.append()
-
 
 # MEMBUAT VECTOR DOKUMEN
 def vectorizer(base_clean_term_list):
@@ -82,6 +80,7 @@ def dokumen_frekuensi(koleksi_term):
 
 
 # MENGHITUNG INVERS DOKUMEN FREKUENSI (IDF)
+# idf masih menghitung kalau term setiap dokumen >1 maka dihitung banyaknya
 def invers_dokumen_frekuensi(term_list):
     idf = []
     z = dokumen_frekuensi(collection_term(term_list))
@@ -89,6 +88,10 @@ def invers_dokumen_frekuensi(term_list):
         for a in x:
             idf.append({a:math.log10((len(term_list)/x.get(a)))})
     return idf
+
+# PEMBOBOTAN TERM SETIAP DOKUMEN
+def weighting_term():
+    pass
 
 
 # FUNGSI MAIN
@@ -110,12 +113,42 @@ def main():
     print(kata_baku)
     print('================== term ==============\n',collection_term(kata_baku))
     print('================== df ==============\n',dokumen_frekuensi(collection_term(kata_baku)))
-    print('================== idf ==============\n',invers_dokumen_frekuensi(kata_baku))
-    # print('---------- vector ----------')
-    # vektor = vectorizer(kata_baku) 
-    # for x in vektor:
-    #     print(x)
+    print('================== idf ==============')
+    term_idf = invers_dokumen_frekuensi(kata_baku)
+    print(term_idf)
 
+    print('================== weighting ==============')
+    vektor = vectorizer(kata_baku)
+    # print(vektor)
+
+    for x in term_idf:
+        for y in x:
+            for z in vektor:
+                if z.get(y) and x.get(y):
+                    # print(y, z.get(y), '---> ',x.get(y))
+                    z[y] = z.get(y) * x.get(y)
+    for x in vektor:
+        print(x)
+        print(sum(x.values()))
+            
+
+    # for x in term_idf:
+    #     z = 0
+    #     for y in x:
+    #         # print(y,x.get(y))
+    #         print(z, y, term_idf[z].get(y))
+    #         z = z+1
+    # sys.exit()
+
+    # for x in vektor:
+    #     # print(x)
+    #     z = 0
+    #     for y in x:
+    #         # print(y, (x.get(y) * 2))
+    #         if(term_idf[z].get(y) != None):
+    #             print(y,x.get(y) * term_idf[z].get(y))
+    #         z += 1
+    #     print('---')
 if __name__ == "__main__":
     main()
 
