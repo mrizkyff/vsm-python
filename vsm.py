@@ -90,8 +90,23 @@ def invers_dokumen_frekuensi(term_list):
     return idf
 
 # PEMBOBOTAN TERM SETIAP DOKUMEN
-def weighting_term():
-    pass
+# mencari vektor dengan key yang sama kemudian dikali dengan df per doc
+def weighting_term(vektor, term_idf):
+    jumlah_per_doc = []
+    for x in term_idf:
+        for y in x:
+            for z in vektor:
+                if z.get(y) and x.get(y):
+                    z[y] = z.get(y) * x.get(y)
+
+    # MENJUMLAHKAN IDF DALAM SATU DOC
+    for x in vektor:
+        jumlah_per_doc.append(sum(x.values()))
+    result = {
+        'total_per_doc':jumlah_per_doc,
+        'vektor_term':vektor,
+    }
+    return result
 
 
 # FUNGSI MAIN
@@ -119,17 +134,17 @@ def main():
 
     print('================== weighting ==============')
     vektor = vectorizer(kata_baku)
-    # print(vektor)
+    weight_term_perdoc = (weighting_term(vektor, term_idf))
+    print(weight_term_perdoc['vektor_term'])
 
-    for x in term_idf:
-        for y in x:
-            for z in vektor:
-                if z.get(y) and x.get(y):
-                    # print(y, z.get(y), '---> ',x.get(y))
-                    z[y] = z.get(y) * x.get(y)
-    for x in vektor:
-        print(x)
-        print(sum(x.values()))
+    print('================== jumlah bobot per doc ==============')
+    jumlah_bobot = weight_term_perdoc['total_per_doc']
+    print(jumlah_bobot)
+
+    
+    # for x in vektor:
+    #     print(x)
+    #     print(sum(x.values()))
             
 
     # for x in term_idf:
