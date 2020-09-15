@@ -127,16 +127,27 @@ def weighting_term(vektor, term_idf):
     }
     return result
 
-def cosine_similarity(term_idf, vektor):
-    # for x in term_idf:
-    #     for y in x:
-    #         for z in vektor:
-    #             if z.get(y) and x.get(y):
-    #                 z[y] = z.get(y) * x.get(y)
+def cosine_similarity(vektor, akar_bobot):
+    query = vektor[0]
+    bobot_query = akar_bobot[0]
+    cosim = []
+    for x in range(1, len(vektor),1):
+        print('doc', x)
+        temp = 0
+        for term in vektor[x]:
+            for y in query:
+                if(y == term):
+                    print(term)
+                    print(query[term] * vektor[x][term])
+                    temp += query[term] * vektor[x][term]
+        temp = temp/(bobot_query * akar_bobot[x])
+        cosim.append({x:temp})
+
+    print('-->cosim',cosim)
     
-    # print(vektor)
-    pass
-    # print(term_idf)
+    print('-->query',query)
+    print('-->vektor',vektor)
+    print('-->vektor_akar',akar_bobot)
 
 
 # FUNGSI MAIN
@@ -179,8 +190,10 @@ def main():
     print(weight_term_perdoc['vektor_akar'])
 
 
-    # print('================== cosine similarity ==============')
+    print('================== cosine similarity ==============')
     # print(vektor)
+    # print(term_idf)
+    cosine_similarity(vektor, weight_term_perdoc['vektor_akar'])
     # print('dump\n ', weight_term_perdoc['dump'])
 
     
