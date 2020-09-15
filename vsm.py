@@ -92,19 +92,36 @@ def invers_dokumen_frekuensi(term_list):
 # PEMBOBOTAN TERM SETIAP DOKUMEN
 # mencari vektor dengan key yang sama kemudian dikali dengan df per doc
 def weighting_term(vektor, term_idf):
-    jumlah_per_doc = []
     for x in term_idf:
         for y in x:
             for z in vektor:
                 if z.get(y) and x.get(y):
                     z[y] = z.get(y) * x.get(y)
 
+    # MENGKUADRATKAN IDF SETIAP TERM
+    # update nilai vektor menjadi kuadratnya
+    vektor_kuadrat = vektor
+    for x in vektor_kuadrat:
+        for y in x:
+            x[y] = (math.pow(x.get(y),2))
+
     # MENJUMLAHKAN IDF DALAM SATU DOC
-    for x in vektor:
+    jumlah_per_doc = []
+    for x in vektor_kuadrat:
         jumlah_per_doc.append(sum(x.values()))
+
+    
+    # AKAR VEKTOR KUADRAT
+    akar_jumlah_per_doc = []
+    for x in jumlah_per_doc:
+        akar_jumlah_per_doc.append(math.sqrt(x))
+
+    # ARRAY HASIL (DICT)
     result = {
         'total_per_doc':jumlah_per_doc,
         'vektor_term':vektor,
+        'vektor_kuadrat':vektor_kuadrat,
+        'vektor_akar':akar_jumlah_per_doc
     }
     return result
 
@@ -113,10 +130,10 @@ def weighting_term(vektor, term_idf):
 def main():
     # DOKUMEN KORPUS
     dokumen_list = []
-    dokumen_list.append('NASI organik terasa lebih lezat dari anorganik')
+    dokumen_list.append('nasi goreng lezat dan sehat')
+    dokumen_list.append('NASI organik enak lebih lezat dari anorganik')
     dokumen_list.append('nasi goreng biasa disajikan dengan telur')
     dokumen_list.append('telur ayam kampung lebih sehat dari negeri')
-    dokumen_list.append('nasi goreng lezat dan sehat')
 
     # print(jumlah_dokumen(dokumen_list))
     # print(case_folding(dokumen_list))
@@ -137,9 +154,18 @@ def main():
     weight_term_perdoc = (weighting_term(vektor, term_idf))
     print(weight_term_perdoc['vektor_term'])
 
+    print('================== vektor kuadrat ==============')
+    print(weight_term_perdoc['vektor_kuadrat'])
+
+
     print('================== jumlah bobot per doc ==============')
     jumlah_bobot = weight_term_perdoc['total_per_doc']
     print(jumlah_bobot)
+
+    print('================== akar jumlah bobot per doc ==============')
+    print(weight_term_perdoc['vektor_akar'])
+
+    # print('dump\n ', weight_term_perdoc['dump'])
 
     
     # for x in vektor:
