@@ -5,6 +5,7 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import math
 import os
 import sys
+import copy
 
 # NOTED: test baru untuk kasus setiap dokumen tidak ada term yang sama
 # NOTED: misal telur ada di DOC3 2x tetap dihitung 1x
@@ -100,10 +101,11 @@ def weighting_term(vektor, term_idf):
 
     # MENGKUADRATKAN IDF SETIAP TERM
     # update nilai vektor menjadi kuadratnya
-    vektor_kuadrat = vektor
-    for x in vektor_kuadrat:
-        for y in x:
-            x[y] = (math.pow(x.get(y),2))
+    vektor_kuadrat = copy.deepcopy(vektor)
+    for i in vektor_kuadrat:
+        for j in i:
+            # vektor_kuadrat.append({j:math.pow(i.get(j),2)})
+            i[j] = math.pow(i.get(j),2)
 
     # MENJUMLAHKAN IDF DALAM SATU DOC
     jumlah_per_doc = []
@@ -124,6 +126,17 @@ def weighting_term(vektor, term_idf):
         'vektor_akar':akar_jumlah_per_doc
     }
     return result
+
+def cosine_similarity(term_idf, vektor):
+    # for x in term_idf:
+    #     for y in x:
+    #         for z in vektor:
+    #             if z.get(y) and x.get(y):
+    #                 z[y] = z.get(y) * x.get(y)
+    
+    # print(vektor)
+    pass
+    # print(term_idf)
 
 
 # FUNGSI MAIN
@@ -165,6 +178,9 @@ def main():
     print('================== akar jumlah bobot per doc ==============')
     print(weight_term_perdoc['vektor_akar'])
 
+
+    # print('================== cosine similarity ==============')
+    # print(vektor)
     # print('dump\n ', weight_term_perdoc['dump'])
 
     
